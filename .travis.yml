@@ -16,12 +16,11 @@ matrix:
     - os: linux
       compiler: i686-w64-mingw32-gcc
       script:
-        - cmake -DCMAKE_TOOLCHAIN_FILE=cmake/mingw-x86.cmake -DCMAKE_BUILD_TYPE=Debug -DMMAN_TEST=ON -DMMAN_COVERAGE=ON
+        - cmake -DCMAKE_TOOLCHAIN_FILE=cmake/mingw-x86.cmake -DCMAKE_BUILD_TYPE=Debug -DMMAN_TEST=ON -DMMAN_COVERAGE=ON -DMMAN_STATIC=ON
         - make -j2
 
-    - os: linux
-      compiler: x86_64-w64-mingw32-gcc
-      script:
-        - cmake -DCMAKE_TOOLCHAIN_FILE=cmake/mingw-x64.cmake -DCMAKE_BUILD_TYPE=Debug -DMMAN_TEST=ON -DMMAN_COVERAGE=ON
-        - make -j2
-
+#    - os: linux
+#      compiler: x86_64-w64-mingw32-gcc
+#      script:
+#        - cmake -DCMAKE_TOOLCHAIN_FILE=cmake/mingw-x64.cmake -DCMAKE_BUILD_TYPE=Debug -DMMAN_TEST=ON -DMMAN_COVERAGE=ON -DMMAN_STATIC=ON
+#        - make -j2

@@ -1,21 +1,31 @@
 
-#include "mman.h"
-
 #include <stdio.h>
+#include <io.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include "mman.h"
 
 #ifndef NULL
-#define NULL    (void*)0
+#define NULL    ((void*)0)
+#endif
+
+#ifdef _MSC_VER
+   typedef int mode_t;
+#  define S_IRUSR ((mode_t)(_S_IREAD))
+#  define S_IWUSR ((mode_t)(_S_IWRITE))
+#  define open _open
+#  define close _close
+#  define unlink _unlink
 #endif
 
 const char* map_file_name = "map_file.dat";
 
 int test_anon_map_readwrite()
 {    
+    int result;
     void* map = mmap(NULL, 1024, PROT_READ | PROT_WRITE,
- 		      MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+		      MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
     if (map == MAP_FAILED)
     {
         printf("mmap (MAP_ANONYMOUS, PROT_READ | PROT_WRITE) returned unexpected error: %d\n", errno);
@@ -24,7 +34,7 @@ int test_anon_map_readwrite()
         
     *((unsigned char*)map) = 1;
     
-    int result = munmap(map, 1024);
+    result = munmap(map, 1024);
     
     if (result != 0)
         printf("munmap (MAP_ANONYMOUS, PROT_READ | PROT_WRITE) returned unexpected error: %d\n", errno);
@@ -33,7 +43,8 @@ int test_anon_map_readwrite()
 }
 
 int test_anon_map_readonly()
-{    
+{
+    int result;
     void* map = mmap(NULL, 1024, PROT_READ,
  		      MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
     if (map == MAP_FAILED)
@@ -44,7 +55,7 @@ int test_anon_map_readonly()
         
     *((unsigned char*)map) = 1;
     
-    int result = munmap(map, 1024);
+    result = munmap(map, 1024);
     
     if (result != 0)
         printf("munmap (MAP_ANONYMOUS, PROT_READ) returned unexpected error: %d\n", errno);
@@ -53,7 +64,8 @@ int test_anon_map_readonly()
 }
 
 int test_anon_map_writeonly()
-{    
+{
+    int result;
     void* map = mmap(NULL, 1024, PROT_WRITE,
  		      MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
     if (map == MAP_FAILED)
@@ -64,7 +76,7 @@ int test_anon_map_writeonly()
         
     *((unsigned char*)map) = 1;
     
-    int result = munmap(map, 1024);
+    result = munmap(map, 1024);
     
     if (result != 0)
         printf("munmap (MAP_ANONYMOUS, PROT_WRITE) returned unexpected error: %d\n", errno);
@@ -73,7 +85,8 @@ int test_anon_map_writeonly()
 }
 
 int test_anon_map_readonly_nowrite()
-{    
+{
+    int result;
     void* map = mmap(NULL, 1024, PROT_READ,
  		      MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
     if (map == MAP_FAILED)
@@ -86,7 +99,7 @@ int test_anon_map_readonly_nowrite()
         printf("test_anon_map_readonly_nowrite (MAP_ANONYMOUS, PROT_READ) returned unexpected value: %d\n", 
                 (int)*((unsigned char*)map));
         
-    int result = munmap(map, 1024);
+    result = munmap(map, 1024);
     
     if (result != 0)
         printf("munmap (MAP_ANONYMOUS, PROT_READ) returned unexpected error: %d\n", errno);
@@ -96,6 +109,7 @@ int test_anon_map_readonly_nowrite()
 
 int test_file_map_readwrite()
 {
+    int result;
     mode_t mode = S_IRUSR | S_IWUSR;
     int o = open(map_file_name, O_TRUNC | O_BINARY | O_RDWR | O_CREAT, mode);
 
@@ -108,7 +122,7 @@ int test_file_map_readwrite()
 
     *((unsigned char*)map) = 1;
     
-    int result = munmap(map, 1024);
+    result = munmap(map, 1024);
     
     if (result != 0)
         printf("munmap returned unexpected error: %d\n", errno);
@@ -123,6 +137,7 @@ int test_file_map_readwrite()
 
 int test_file_map_mlock_munlock()
 {
+    void* map;
     const size_t map_size = 1024;
     
     int result = 0;
@@ -134,7 +149,7 @@ int test_file_map_mlock_munlock()
         return -1;
     }
 
-    void* map = mmap(NULL, map_size, PROT_READ | PROT_WRITE, MAP_PRIVATE, o, 0);
+    map = mmap(NULL, map_size, PROT_READ | PROT_WRITE, MAP_PRIVATE, o, 0);
     if (map == MAP_FAILED)
     {
         printf("mmap returned unexpected error: %d\n", errno);
@@ -173,6 +188,7 @@ done_close:
 
 int test_file_map_msync()
 {
+    void* map;
     const size_t map_size = 1024;
     
     int result = 0;
@@ -184,7 +200,7 @@ int test_file_map_msync()
         return -1;
     }
 
-    void* map = mmap(NULL, map_size, PROT_READ | PROT_WRITE, MAP_PRIVATE, o, 0);
+    map = mmap(NULL, map_size, PROT_READ | PROT_WRITE, MAP_PRIVATE, o, 0);
     if (map == MAP_FAILED)
     {
         printf("mmap returned unexpected error: %d\n", errno);
@@ -222,15 +238,15 @@ int main()
     int result = 0;
     
     EXEC_TEST(test_anon_map_readwrite);
-    //NOTE: this test must cause an access violation exception
-    //EXEC_TEST(test_anon_map_readonly);
+    /*NOTE: this test must cause an access violation exception*/
+    /*EXEC_TEST(test_anon_map_readonly);*/
     EXEC_TEST(test_anon_map_readonly_nowrite);
     EXEC_TEST(test_anon_map_writeonly);
     
     EXEC_TEST(test_file_map_readwrite);
     EXEC_TEST(test_file_map_mlock_munlock);
     EXEC_TEST(test_file_map_msync);
-    //TODO: EXEC_TEST(test_file_map_mprotect);
+    /*TODO: EXEC_TEST(test_file_map_mprotect);*/
     
     return result;
 }

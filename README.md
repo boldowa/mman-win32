@@ -9,3 +9,12 @@ The mmap-win32 library implements a wrapper for mmap functions around the memory
 
 License: [MIT License](https://opensource.org/licenses/mit-license.php)
 
+
+## Build / Install steps
+
+1. Install [CMake](https://cmake.org)
+2. Move to **build** directory
+3. Run `cmake .. && make -j2` command.
+4. Run `sudo make install` command.
+
+

@@ -1,6 +1,7 @@
 # mmain-win32
 
 [![Build Status](https://travis-ci.org/boldowa/mman-win32.svg?branch=master)](https://travis-ci.org/boldowa/mman-win32)
+[![Coverage Status](https://coveralls.io/repos/github/boldowa/mman-win32/badge.svg?branch=master)](https://coveralls.io/github/boldowa/mman-win32?branch=master)
 
 A light implementation of the mmap functions for MinGW(forked from https://code.google.com/archive/p/mman-win32/).
 

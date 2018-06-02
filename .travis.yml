@@ -6,25 +6,34 @@ addons:
       - cmake
       - cmake-data
 
+cache:
+  - apt
+  - pip
+
 before_install:
   - sudo apt-get -qq update
   - sudo apt-get -qq install -y wine
-  - sudo apt-get -qq install -y binutils-mingw-w64-i686 gcc-mingw-w64-i686
   - pip install --user cpp-coveralls
-
-after_success:
-  - coveralls --exclude lib
 
 matrix:
   include:
+    # x86 Windows builds
     - os: linux
       compiler: i686-w64-mingw32-gcc
+      install:
+        - sudo apt-get -qq install -y binutils-mingw-w64-i686 gcc-mingw-w64-i686
       script:
         - cmake -DCMAKE_TOOLCHAIN_FILE=cmake/mingw-x86.cmake -DCMAKE_BUILD_TYPE=Debug -DMMAN_TEST=ON -DMMAN_COVERAGE=ON -DMMAN_STATIC=ON
         - make -j2
+      after_success:
+        - coveralls -e CMakeFiles
 
-#    - os: linux
-#      compiler: x86_64-w64-mingw32-gcc
-#      script:
-#        - cmake -DCMAKE_TOOLCHAIN_FILE=cmake/mingw-x64.cmake -DCMAKE_BUILD_TYPE=Debug -DMMAN_TEST=ON -DMMAN_COVERAGE=ON -DMMAN_STATIC=ON
-#        - make -j2
+    # x64 Windows builds
+    - os: linux
+      compiler: x86_64-w64-mingw32-gcc
+      install:
+        - sudo apt-get -qq install -y binutils-mingw-w64-x86-64 gcc-mingw-w64-x86-64
+      script:
+        - cmake -DCMAKE_TOOLCHAIN_FILE=cmake/mingw-x64.cmake -DCMAKE_BUILD_TYPE=Debug -DMMAN_TEST=ON -DMMAN_COVERAGE=ON -DMMAN_STATIC=ON
+        - make -j2
+

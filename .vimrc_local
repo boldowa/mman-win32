@@ -1,0 +1,21 @@
+"-------------------
+" Set path
+"-------------------
+let &path ="/usr/i686-w64-mingw32/include"
+let &path.="/usr/i686-w64-mingw32/local/include"
+
+"---------------------------------------
+" ale config
+"---------------------------------------
+" --- C
+let g:ale_linters = {'c': ['gcc'], 'cpp': ['gcc']}
+let g:ale_c_gcc_options  = '-Wall -Wpedantic -Wno-format -Wconversion '
+
+"--- mingw32 option
+let g:ale_c_gcc_executable  = 'i686-w64-mingw32-gcc'
+let g:ale_c_gcc_options .= '-DWIN32 -DWindows '
+
+" --- CPP
+let g:ale_cpp_gcc_options  = g:ale_c_gcc_options
+
+let g:ale_c_gcc_options .= '-ansi '

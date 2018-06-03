@@ -6,12 +6,6 @@ cache:
   - apt
   - pip
 
-addons:
-  apt:
-    packages:
-      - cmake
-      - cmake-data
-      - wine
 
 git:
   depth: 3
@@ -29,6 +23,9 @@ matrix:
       addons:
         apt:
           packages:
+            - cmake
+            - cmake-data
+            - wine
             - binutils-mingw-w64-i686
             - gcc-mingw-w64-i686
             - g++-mingw-w64-i686
@@ -44,6 +41,9 @@ matrix:
       addons:
         apt:
           packages:
+            - cmake
+            - cmake-data
+            - wine
             - binutils-mingw-w64-x86-64
             - gcc-mingw-w64-x86-64
             - g++-mingw-w64-x86-64

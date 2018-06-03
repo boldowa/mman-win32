@@ -1,27 +1,37 @@
 language: C
 
-addons:
-  apt:
-    packages:
-      - cmake
-      - cmake-data
+sudo: false
 
 cache:
   - apt
   - pip
 
+addons:
+  apt:
+    packages:
+      - cmake
+      - cmake-data
+      - wine
+
+git:
+  depth: 3
+
+
 before_install:
-  - sudo apt-get -qq update
-  - sudo apt-get -qq install -y wine
   - pip install --user cpp-coveralls
+
 
 matrix:
   include:
     # x86 Windows builds
     - os: linux
       compiler: i686-w64-mingw32-gcc
-      install:
-        - sudo apt-get -qq install -y binutils-mingw-w64-i686 gcc-mingw-w64-i686
+      addons:
+        apt:
+          packages:
+            - binutils-mingw-w64-i686
+            - gcc-mingw-w64-i686
+            - g++-mingw-w64-i686
       script:
         - cmake -DCMAKE_TOOLCHAIN_FILE=cmake/mingw-x86.cmake -DCMAKE_BUILD_TYPE=Debug -DMMAN_TEST=ON -DMMAN_COVERAGE=ON -DMMAN_STATIC=ON
         - make -j2
@@ -31,8 +41,12 @@ matrix:
     # x64 Windows builds
     - os: linux
       compiler: x86_64-w64-mingw32-gcc
-      install:
-        - sudo apt-get -qq install -y binutils-mingw-w64-x86-64 gcc-mingw-w64-x86-64
+      addons:
+        apt:
+          packages:
+            - binutils-mingw-w64-x86-64
+            - gcc-mingw-w64-x86-64
+            - g++-mingw-w64-x86-64
       script:
         - cmake -DCMAKE_TOOLCHAIN_FILE=cmake/mingw-x64.cmake -DCMAKE_BUILD_TYPE=Debug -DMMAN_TEST=ON -DMMAN_COVERAGE=ON -DMMAN_STATIC=ON
         - make -j2

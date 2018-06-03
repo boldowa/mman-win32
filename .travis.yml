@@ -30,6 +30,7 @@ matrix:
             - gcc-mingw-w64-i686
             - g++-mingw-w64-i686
       script:
+        - df -h
         - cmake -DCMAKE_TOOLCHAIN_FILE=cmake/mingw-x86.cmake -DCMAKE_BUILD_TYPE=Debug -DMMAN_TEST=ON -DMMAN_COVERAGE=ON -DMMAN_STATIC=ON
         - make -j2
       after_success:
@@ -48,6 +49,7 @@ matrix:
             - gcc-mingw-w64-x86-64
             - g++-mingw-w64-x86-64
       script:
+        - df -h
         - cmake -DCMAKE_TOOLCHAIN_FILE=cmake/mingw-x64.cmake -DCMAKE_BUILD_TYPE=Debug -DMMAN_TEST=ON -DMMAN_COVERAGE=ON -DMMAN_STATIC=ON
         - make -j2
 
